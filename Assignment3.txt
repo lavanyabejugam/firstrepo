@@ -1,0 +1,78 @@
+using System;
+namespace MultipleObjects
+{
+    public class PrivateClass
+    {
+        static int NoOfObjectsCreated = 0;
+        public class ResourceManagement : IDisposable 
+        {
+            private bool IsDisposed = false;
+            //Call Dispose to free resources explicitly
+            public void Dispose()
+            {
+                             //Pass true in dispose method to clean managed resources too and say GC to skip finalize in next line.
+                Dispose(true);
+                NoOfObjectsCreated--;
+                             //If dispose is called already then say GC to skip finalize on this instance.
+                GC.SuppressFinalize(this);
+            }
+            
+                   //Implement dispose to free resources
+            protected virtual void Dispose(bool disposedStatus)
+            {
+                if (!IsDisposed)
+                {
+                    IsDisposed = true;
+                                      // Released unmanaged Resources
+                    if (disposedStatus) 
+                    {
+                                                // Released managed Resources
+                    }
+                }
+            }
+        }
+        public ResourceManagement _ReturnObject()
+        {
+            ResourceManagement obj = new ResourceManagement();
+            return obj;
+        }
+        private PrivateClass()
+        {
+
+        }
+    
+        public static PrivateClass ReturnObject()
+        {
+            if(NoOfObjectsCreated < 5)
+            {
+                NoOfObjectsCreated++;
+                Console.WriteLine("Object{0} Created", NoOfObjectsCreated);
+                return new PrivateClass();
+            }
+            else
+            {
+                throw(new Exception("Error : More number of objects for a private constructor class"));
+            }
+        }
+   
+    }
+
+    public class Program
+    {
+	    public static void Main()
+	    {
+		    PrivateClass obj1 = PrivateClass.ReturnObject();
+		    PrivateClass obj2 = PrivateClass.ReturnObject();
+		    PrivateClass obj3 = PrivateClass.ReturnObject();
+		    PrivateClass obj4 = PrivateClass.ReturnObject();
+		    PrivateClass obj5 = PrivateClass.ReturnObject();
+		    PrivateClass.ResourceManagement objA = obj1._ReturnObject();
+            PrivateClass.ResourceManagement objB = obj2._ReturnObject();
+		    objA.Dispose();
+            objB.Dispose();
+		    PrivateClass obj7 = PrivateClass.ReturnObject();
+		    PrivateClass obj8 = PrivateClass.ReturnObject();
+            Console.ReadLine();
+	    }
+    }
+}
